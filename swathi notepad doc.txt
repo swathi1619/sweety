@@ -1,0 +1,419 @@
+
+135.
+public class Solution {
+public static int solution(int N) {
+int max = 0;
+int count = -1;
+int r = 0;
+while (N > 0) {
+// get right most bit & shift rightr = N & 1;
+N = N >> 1;
+if (0 == r && count >= 0) {
+count++;
+}
+if (1 == r) {
+max = count > max ? count : max;
+count = 0;
+}
+}
+return max;
+}public static void main(String[] args) {
+System.out.println(solution(9));
+}
+}
+
+136.
+public int hammingWeight(int n) {
+int count = 0;
+for(int i=1; i<33; i++){
+if(getBit(n, i) == true){
+count++;
+}
+}
+return count;
+}
+public boolean getBit(int n, int i){
+return (n & (1 << i)) != 0;
+}
+
+137.
+public int reverseBits(int n) {
+for (int i = 0; i < 16; i++) {
+n = swapBits(n, i, 32 - i - 1);
+}
+return n;
+}
+public int swapBits(int n, int i, int j) {
+int a = (n >> i) & 1;
+int b = (n >> j) & 1;
+if ((a ^ b) != 0) {
+return n ^= (1 << i) | (1 << j);
+}
+return n;
+}
+
+138.
+import java.util.HashMap;
+import java.util.ArrayList;
+public List<String> findRepeatedDnaSequences(String s) {
+List<String> result = new ArrayList<String>();
+int len = s.length();
+if (len < 10) {return result;
+}
+Map<Character, Integer> map = new HashMap<Character, Integer>();
+map.put(’A’, 0);
+map.put(’C’, 1);
+map.put(’G’, 2);
+map.put(’T’, 3);
+Set<Integer> temp = new HashSet<Integer>();
+Set<Integer> added = new HashSet<Integer>();
+int hash = 0;
+for (int i = 0; i < len; i++) {
+if (i < 9) {
+//each ACGT fit 2 bits, so left shift 2
+hash = (hash << 2) + map.get(s.charAt(i));
+}
+ else {hash = (hash << 2) + map.get(s.charAt(i));
+//make length of hash to be 20
+hash = hash & (1 << 20) - 1;
+if (temp.contains(hash) && !added.contains(hash)) {
+result.add(s.substring(i - 9, i + 1));
+added.add(hash); 
+//track added
+}
+ else {
+temp.add(hash);
+}
+}
+}
+return result;
+}
+139.
+public int rangeBitwiseAnd(int m, int n) {
+while (n > m) {
+n = n & n - 1;
+}
+return m & n;
+}
+140.
+import java.util.ArrayList;
+public ArrayList<ArrayList<Integer>> permute(int[] num) {
+ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+//start from an empty list
+result.add(new ArrayList<Integer>());
+for (int i = 0; i < num.length; i++) {
+//list of list in current iteration of the array num
+ArrayList<ArrayList<Integer>> current = new
+ArrayList<ArrayList<Integer>>();
+for (ArrayList<Integer> l : result) {
+// # of locations to insert is largest index + 1
+for (int j = 0; j < l.size()+1; j++) {
+// + add num[i] to different locations
+l.add(j, num[i]);
+ArrayList<Integer> temp = new ArrayList<Integer>(l);
+current.add(temp);
+//System.out.println(temp);
+// - remove num[i] addl.remove(j);
+}
+}
+result = new ArrayList<ArrayList<Integer>>(current);
+}
+return result;
+}
+141.
+import java.util.ArrayList;
+public ArrayList<ArrayList<Integer>> permuteUnique(int[] num) {
+ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+permuteUnique(num, 0, result);
+return result;
+}
+private void permuteUnique(int[] num, int start,ArrayList<ArrayList<Integer>> result) {
+if (start >= num.length ) {
+ArrayList<Integer> item = convertArrayToList(num);
+result.add(item);
+}
+for (int j = start; j <= num.length-1; j++) {
+if (containsDuplicate(num, start, j)) {
+swap(num, start, j);
+permuteUnique(num, start + 1, result);
+swap(num, start, j);
+}
+}
+}
+private ArrayList<Integer> convertArrayToList(int[] num) {
+ArrayList<Integer> item = new ArrayList<Integer>();
+for (int h = 0; h < num.length; h++) {
+item.add(num[h]);
+}
+return item;
+}
+private boolean containsDuplicate(int[] arr, int start, int end) {
+for (int i = start; i <= end-1; i++) {
+if (arr[i] == arr[end]) {
+return false;
+}
+}
+return true;
+}
+private void swap(int[] a, int i, int j) {
+int temp = a[i];
+a[i] = a[j];
+a[j] = temp;
+}
+142.
+public class Solution {
+public String getPermutation(int n, int k) {
+boolean[] output = new boolean[n];
+StringBuilder buf = new StringBuilder("");
+int[] res = new int[n];
+res[0] = 1;
+for (int i = 1; i < n; i++)
+res[i] = res[i - 1]*i;
+for (int i = n - 1; i >= 0; i--) {
+int s = 1;
+while (k > res[i]) {
+s++;
+k = k - res[i];
+}
+for (int j = 0; j < n; j++) {
+if (j + 1 <= s && output[j]) {
+s++;
+}
+}
+output[s - 1] = true;
+buf.append(Integer.toString(s));
+}
+return buf.toString();
+}
+}
+143.
+import java.util.ArrayList;
+public List<String> generateParenthesis(int n) {
+ArrayList<String> result = new ArrayList<String>();
+ArrayList<Integer> diff = new ArrayList<Integer>();
+result.add("");
+diff.add(0);
+for (int i = 0; i < 2*n; i++) {
+ArrayList<String> temp1 = new ArrayList<String>();
+ArrayList<Integer> temp2 = new ArrayList<Integer>();
+for (int j = 0; j < result.size(); j++) {
+String s = result.get(j);i
+nt k = diff.get(j);
+if (i < 2*n - 1) {
+temp1.add(s + "(");
+temp2.add(k + 1);
+}
+if (k > 0 && i < 2*n - 1 || k == 1 && i == 2*n - 1) {
+temp1.add(s + ")");
+temp2.add(k - 1);
+}
+}
+result = new ArrayList<String>(temp1);
+diff = new ArrayList<Integer>(temp2);
+}
+return result;
+}
+144.
+import java.util.ArrayList;
+public ArrayList<ArrayList<Integer>> combinationSum(int[] candidates, inttarget) {
+ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+if(candidates == null || candidates.length == 0)
+ return result;
+ArrayList<Integer> current = new ArrayList<Integer>();
+Arrays.sort(candidates);
+combinationSum(candidates, target, 0, current, result);
+return result;
+}
+public void combinationSum(int[] candidates, int target, int j,ArrayList<Integer> curr, ArrayList<ArrayList<Integer>> result){
+if(target == 0){
+ArrayList<Integer> temp = new ArrayList<Integer>(curr);
+result.add(temp);
+return;
+}
+for(int i=j; i<candidates.length; i++){
+if(target < candidates[i])
+return;
+curr.add(candidates[i]);
+combinationSum(candidates, target - candidates[i], i, curr, result);
+curr.remove(curr.size()-1);
+}
+}
+145.
+import java.util.ArrayList;
+public List<ArrayList<Integer>> combinationSum2(int[] num, int target) {
+ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+if(num == null || num.length == 0)
+return result;
+Arrays.sort(num);
+ArrayList<Integer> temp = new ArrayList<Integer>();
+getCombination(num, 0, target, temp, result);
+HashSet<ArrayList<Integer>> set = new HashSet<ArrayList<Integer>>(result);
+//remove duplicate listsresult.clear();
+result.addAll(set);
+return result;
+}
+public void getCombination(int[] num, int start, int target,ArrayList<Integer> temp, ArrayList<ArrayList<Integer>> result){
+if(target == 0){
+ArrayList<Integer> t = new ArrayList<Integer>(temp);
+result.add(t);
+return;
+}
+for(int i=start; i<num.length; i++){
+if(target < num[i])
+continue;
+temp.add(num[i]);
+getCombination(num, i+1, target-num[i], temp, result);
+temp.remove(temp.size()-1);
+}
+}
+146.
+import java.util.ArrayList;
+public ArrayList<ArrayList<Integer>> combinationSum3(int k, int n) {
+ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+ArrayList<Integer> list = new ArrayList<Integer>();
+dfs(result, 1, n, list, k);
+return result;
+}
+public void dfs(ArrayList<ArrayList<Integer>> result, int start, int sum,ArrayList<Integer> list, int k){
+if(sum==0 && list.size()==k){
+ArrayList<Integer> temp = new ArrayList<Integer>();
+temp.addAll(list);
+result.add(temp);
+}
+for(int i=start; i<=9; i++){
+if(sum-i<0) 
+break;
+if(list.size()>k) 
+break;
+list.add(i);
+dfs(result, i+1, sum-i, list, k);
+list.remove(list.size()-1);
+}
+}
+147.
+import java.util.ArrayList;
+public ArrayList<ArrayList<Integer>> combine(int n, int k) {
+ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+if (n <= 0 || n < k)
+return result;
+ArrayList<Integer> item = new ArrayList<Integer>();
+dfs(n, k, 1, item, result); 
+// because it need to begin from 1
+return result;
+}
+private void dfs(int n, int k, int start, ArrayList<Integer> item,ArrayList<ArrayList<Integer>> res) {
+if (item.size() == k) {
+res.add(new ArrayList<Integer>(item));
+return;
+}
+for (int i = start; i <= n; i++) {
+item.add(i);
+dfs(n, k, i + 1, item, res);
+item.remove(item.size() - 1);
+}
+}
+148.
+import java.util.HashMap;
+import java.util.ArrayList
+public List<String> letterCombinations(String digits) {
+HashMap<Integer, String> map = new HashMap<Integer, String>();
+map.put(2, "abc");
+map.put(3, "def");
+map.put(4, "ghi");
+map.put(5, "jkl");
+map.put(6, "mno");
+map.put(7, "pqrs");
+map.put(8, "tuv");
+map.put(9, "wxyz");
+map.put(0, "");
+ArrayList<String> result = new ArrayList<String>();
+if(digits == null || digits.length() == 0)
+return result;
+ArrayList<Character> temp = new ArrayList<Character>();
+getString(digits, temp, result, map);
+return result;
+}
+public void getString(String digits, ArrayList<Character> temp,ArrayList<String> result, HashMap<Integer, String> map){
+if(digits.length() == 0){
+char[] arr = new char[temp.size()];
+for(int i=0; i<temp.size(); i++){
+arr[i] = temp.get(i);
+}
+result.add(String.valueOf(arr));
+return;
+}
+Integer curr = Integer.valueOf(digits.substring(0,1));
+String letters = map.get(curr);
+for(int i=0; i<letters.length(); i++){
+temp.add(letters.charAt(i));
+getString(digits.substring(1), temp, result, map);
+temp.remove(temp.size()-1);
+}
+}
+149.
+public int reverse(int x) {
+//flag marks if x is negative
+boolean flag = false;
+if (x < 0) {
+x = 0 - x;
+flag = true;
+}
+int res = 0;
+int p = x;
+while (p > 0) {
+int mod = p % 10;
+p = p / 10;
+res = res*10 + mod;
+}
+if (flag) {
+res = 0 - res;
+}
+return res;
+}
+150.
+public class Solution {
+public boolean isPalindrome(int x) {
+//negative numbers are not palindrome
+if (x < 0)
+return false;
+// initialize how many zeros
+int div = 1;
+while (x / div >= 10) {
+div*= 10;
+}
+while (x != 0) {
+int left = x / div;
+int right = x % 10;
+if (left != right)
+return false;
+x = (x % div) / 10;div /= 100;
+}
+return true;
+}
+}
+151.
+public double pow(double x, int n) {
+if (n == 0)
+return 1;
+if (n == 1)
+return x;
+int pn = n > 0 ? n : -n;
+// positive nint pn2 = pn;
+double px = x > 0 ? x : -x;
+// positive xdouble result = px;
+int k = 1;
+//the key part of solving this problem
+while (pn / 2 > 0) {
+result = result*result;
+pn = pn / 2;
+k = k*2;
+}
+result = result*pow(px, pn2 - k);
+// handle negative result
+if (x < 0 && n % 2 == 1)
+result = -result;
+// handle negative powerif (n < 0)
+result = 1 / result;
+return result;
+}
+
